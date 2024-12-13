@@ -21,6 +21,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onAddTransacti
       type,
     });
 
+    // Clear form after submission
     setDescription('');
     setAmount('');
   };
