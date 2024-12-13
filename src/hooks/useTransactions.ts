@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Transaction } from '../types/Transaction';
 import { 
   saveToStorage, 
@@ -11,7 +11,6 @@ export const useTransactions = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load transactions from localStorage on initial render
   useEffect(() => {
     try {
       const savedTransactions = loadFromStorage();
@@ -24,14 +23,13 @@ export const useTransactions = () => {
     }
   }, []);
 
-  // Save transactions to localStorage whenever they change
   useEffect(() => {
     if (transactions.length > 0) {
       saveToStorage(transactions);
     }
   }, [transactions]);
 
-  const addTransaction = async (newTransaction: Omit<Transaction, 'id' | 'date'>) => {
+  const addTransaction = useCallback(async (newTransaction: Omit<Transaction, 'id' | 'date'>) => {
     try {
       const transaction: Transaction = {
         ...newTransaction,
@@ -45,9 +43,19 @@ export const useTransactions = () => {
       setError('Erro ao adicionar transação');
       console.error(err);
     }
-  };
+  }, []);
 
-  const clearTransactions = async () => {
+  const deleteTransaction = useCallback((id: string) => {
+    try {
+      setTransactions(prev => prev.filter(transaction => transaction.id !== id));
+      setError(null);
+    } catch (err) {
+      setError('Erro ao excluir transação');
+      console.error(err);
+    }
+  }, []);
+
+  const clearTransactions = useCallback(async () => {
     try {
       clearStorage();
       setTransactions([]);
@@ -56,13 +64,14 @@ export const useTransactions = () => {
       setError('Erro ao limpar transações');
       console.error(err);
     }
-  };
+  }, []);
 
   return {
     transactions,
     isLoading,
     error,
     addTransaction,
+    deleteTransaction,
     clearTransactions,
   };
 };

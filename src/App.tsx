@@ -12,7 +12,8 @@ export function App() {
     transactions, 
     isLoading, 
     error, 
-    addTransaction, 
+    addTransaction,
+    deleteTransaction, 
     clearTransactions 
   } = useTransactions();
 
@@ -51,7 +52,10 @@ export function App() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-700 mx-auto"></div>
           </div>
         ) : (
-          <TransactionList transactions={transactions} />
+          <TransactionList 
+            transactions={transactions}
+            onDeleteTransaction={deleteTransaction}
+          />
         )}
       </main>
     </div>
